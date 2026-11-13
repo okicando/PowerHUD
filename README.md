@@ -5,6 +5,7 @@
 
 ![platform](https://img.shields.io/badge/platform-macOS-black?logo=apple)
 ![license](https://img.shields.io/badge/license-MIT-blue)
+[![Download](https://img.shields.io/badge/Download-latest%20release-brightgreen)](https://github.com/okicando/PowerHUD/releases/latest)
 
 <img src="docs/screenshot-ac.png" width="360" alt="PowerHUD — AC power">
 
@@ -36,6 +37,14 @@ A couple of gotchas the code handles:
 
 - ioreg prints negative 64-bit values as unsigned (two's complement), e.g. `18446744073709550695` is really −921 mA.
 - When the battery charge is above the charge limit, macOS keeps running off the battery even while plugged in. PowerHUD follows the actual power flow instead of the cable state, and shows the gradual handover when the adapter takes over.
+
+## Install / 安装
+
+1. Download the latest release: [**PowerHUD.zip**](https://github.com/okicando/PowerHUD/releases/latest)
+2. Unzip and move `PowerHUD.app` into your Applications folder
+3. Launch it — the floating card appears; no Dock icon
+
+> The app is ad-hoc signed (not notarized). If Gatekeeper blocks the first launch, right-click the app → **Open**, or run `xattr -d com.apple.quarantine /Applications/PowerHUD.app`.
 
 ## Build / 构建
 
