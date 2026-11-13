@@ -333,13 +333,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             modeLabel.attributedStringValue = modeString("电池供电", color: .systemOrange)
         }
 
-        // During power-source transitions the gauge can report zeros for a while;
-        // ignore those samples for the numeric values and keep the last valid
-        // reading on screen.
-        guard r.watts > 0 else { return }
-        wattsLabel.attributedStringValue = heroString(r.watts)
-        voltageLabel.attributedStringValue = detailString("电压：", number: String(format: "%.1f", r.volts), unit: "V")
-        currentLabel.attributedStringValue = detailString("电流：", number: String(format: "%.2f", r.amps), unit: "A")
+        // Show whatever is measured right now, and a dash for values the gauge
+        // has not delivered yet — stale numbers must not masquerade as fresh data.
+        if r.watts > 0 {
+            wattsLabel.attributedStringValue = heroString(r.watts)
+        } else {
+            wattsLabel.attributedStringValue = heroDash()
+        }
+        if r.volts > 0 {
+            voltageLabel.attributedStringValue = detailString("电压：", number: String(format: "%.1f", r.volts), unit: "V")
+        } else {
+            voltageLabel.attributedStringValue = detailString("电压：", number: "—", unit: "V")
+        }
+        if r.amps > 0 {
+            currentLabel.attributedStringValue = detailString("电流：", number: String(format: "%.2f", r.amps), unit: "A")
+        } else {
+            currentLabel.attributedStringValue = detailString("电流：", number: "—", unit: "A")
+        }
     }
 
     private func detailString(_ prefix: String, number: String, unit: String) -> NSAttributedString {
@@ -378,6 +388,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             attributes: [
                 .font: NSFont.systemFont(ofSize: style.modeFont, weight: .medium),
                 .foregroundColor: NSColor(calibratedWhite: 1, alpha: 0.55),
+            ]))
+        return result
+    }
+
+    private func heroDash() -> NSAttributedString {
+        let result = NSMutableAttributedString(
+            string: "—",
+            attributes: [
+                .font: NSFont.monospacedDigitSystemFont(ofSize: style.heroFont, weight: .semibold),
+                .foregroundColor: NSColor(calibratedWhite: 1, alpha: 0.6),
+            ])
+        result.append(NSAttributedString(
+            string: " W",
+            attributes: [
+                .font: NSFont.systemFont(ofSize: style.unitFont, weight: .medium),
+                .foregroundColor: NSColor(calibratedWhite: 1, alpha: 0.45),
             ]))
         return result
     }
