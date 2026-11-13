@@ -38,6 +38,14 @@ A couple of gotchas the code handles:
 - ioreg prints negative 64-bit values as unsigned (two's complement), e.g. `18446744073709550695` is really −921 mA.
 - When the battery charge is above the charge limit, macOS keeps running off the battery even while plugged in. PowerHUD follows the actual power flow instead of the cable state, and shows the gradual handover when the adapter takes over.
 
+## Power-source transitions / 供电切换
+
+PowerHUD follows the **actual power flow**, not just the cable state — 按真实电力流向显示，而非只看是否插电：
+
+- **Unplug / 拔电** — the mode label flips instantly (`ExternalConnected` is interrupt-driven), and battery voltage is readable right away. The gauge's filtered current/power telemetry (`BatteryPower`, `InstantAmperage`) only updates every ~30–60 s, so those fields show `—` until fresh data arrives instead of displaying stale adapter values.
+- **Plug in / 插电** — during the handover the battery keeps supplying the system while the adapter ramps up. The card stays in battery mode and the wattage visibly ramps down, then flips to 电源供电 the moment the adapter actually takes over. The physical transition is shown, not hidden.
+- **Above the charge limit / 高于充电上限** — when the battery is charged above macOS's charge limit, the Mac deliberately runs off the battery even while plugged in (the adapter delivers only ~0.3 W). The card shows 电池供电 in that state, because that is where the power actually comes from.
+
 ## Install / 安装
 
 1. Download the latest release: [**PowerHUD.zip**](https://github.com/okicando/PowerHUD/releases/latest)
